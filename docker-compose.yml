@@ -1,0 +1,40 @@
+version: '3.4'
+
+services:
+  tmenos3.netcore.serilog.api:
+    image: ${DOCKER_REGISTRY-}tmenos3netcoreserilogapi
+    build:
+      context: .
+      dockerfile: src/TMenos3.NetCore.Serilog.API/Dockerfile
+    depends_on:
+      - elasticsearch
+    links:
+      - elasticsearch
+    environment:
+      - LoggingOptions__NodeUri=http://elasticsearch:9200/
+
+  elasticsearch:
+   container_name: elasticsearch
+   image: docker.elastic.co/elasticsearch/elasticsearch:7.6.1
+   ports:
+    - 9200:9200
+   volumes:
+    - elasticsearch-data:/usr/share/elasticsearch/data
+   environment:
+    - xpack.monitoring.enabled=true
+    - xpack.watcher.enabled=false
+    - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    - discovery.type=single-node
+      
+  kibana:
+   container_name: kibana
+   image: docker.elastic.co/kibana/kibana:7.6.1
+   ports:
+    - 5601:5601
+   depends_on:
+    - elasticsearch
+   environment:
+    - ELASTICSEARCH_URL=http://elasticsearch:9200
+
+volumes:
+  elasticsearch-data:
