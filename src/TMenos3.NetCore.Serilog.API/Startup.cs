@@ -10,6 +10,7 @@ using Serilog.Extensions.Logging;
 using Serilog.Sinks.Elasticsearch;
 using System;
 using TMenos3.NetCore.Serilog.API.Enrichers;
+using TMenos3.NetCore.Serilog.API.Middlewares;
 
 namespace TMenos3.NetCore.Serilog.API
 {
@@ -64,6 +65,8 @@ namespace TMenos3.NetCore.Serilog.API
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseMiddleware<CorrelationContextMiddleware>();
 
             app.UseHttpsRedirection();
 
